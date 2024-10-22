@@ -1,6 +1,6 @@
 import tkinter as tk
 from math import sqrt
-from re import split
+import re
 
 class Calculadora:
     def __init__(self,janela):
@@ -63,18 +63,23 @@ class Calculadora:
             self.expressao = ""
 
     def porcentagem(self):
-        expressao = self.texto.get()
-        elemento = split(r"[/*\-+]", expressao)
-        porcentagem = float(elemento[-1])/100
-        expressao_simples = expressao[0:len(expressao)-len(elemento[-1])-1]
-        calculo_porcentagem = float(eval(expressao_simples) * porcentagem)
-        expressao = expressao[0:len(expressao)-len(elemento[-1])]+str(calculo_porcentagem)
+
+        expressao = str(self.texto.get())
+        er = r"([/*\-+])([0-9]+)$"     # Separa o sinal operador e o último número em 2 grupos separados
+        match = re.search(er,expressao)
+        sinal = match.group(1)
+        parte1 = re.sub(er,"",expressao)
+        parte1 = eval(str(parte1))
+        parte2 = float(match.group(2))/100
+        parte2 = parte2 * parte1
+
+        expressao = str(parte1) + str(sinal) + str(parte2)
+
 
         resultado = eval(expressao)
 
-        self.texto.set(str(resultado))
         self.expressao = str(resultado)
-
+        self.texto.set(str(resultado))
 
 
 
@@ -84,7 +89,7 @@ class Calculadora:
 
 janela = tk.Tk()
 janela.title("Calculadora")
-janela.geometry("300x552")
+janela.geometry("300x445")
 
 calculadora = Calculadora(janela)
 
